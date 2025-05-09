@@ -1,0 +1,44 @@
+@model List<OnlineStore.DataAccess.Models.Product>
+
+@using System.Text.Json
+@{
+    var productsJson = JsonSerializer.Serialize(Model, new JsonSerializerOptions
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    });
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<div class="container mt-5">
+    <h2 class="mb-4">🛍️ Available Products</h2>
+    <button id="loadBtn" class="btn btn-primary mb-3">Load Products</button>
+    <ul id="productList" class="list-group"></ul>
+</div>
+
+<!-- ✅ Safely inject the JSON here -->
+<script type="application/json" id="products-data">
+    @Html.Raw(productsJson)
+</script>
+
+<script>
+    const products = JSON.parse(document.getElementById("products-data").textContent);
+
+    document.getElementById("loadBtn").addEventListener("click", function () {
+        const list = document.getElementById("productList");
+        list.innerHTML = "";
+
+        if (!products || products.length === 0) {
+            list.innerHTML = "<li class='list-group-item text-danger'>No products found.</li>";
+            return;
+        }
+
+        products.forEach(product => {
+            const li = document.createElement("li");
+            li.className = "list-group-item";
+            li.innerText = "🛒 " + product.name;
+            list.appendChild(li);
+        });
+    });
+</script>
